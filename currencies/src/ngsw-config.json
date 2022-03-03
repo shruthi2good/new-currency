@@ -1,0 +1,48 @@
+{
+    "index": "/index.html",
+    "start_url": "/",
+    "appData": {
+        "version": "2.0.0",
+        "changelog": "PWA integration has been completed."
+    },
+    "assetGroups": [
+        {
+            "name": "app",
+            "installMode": "prefetch",
+            "resources": {
+                "files": [
+                    "/favicon.ico",
+                    "/index.html",
+                    "/*.css",
+                    "/*.js",
+          "/manifest.webmanifest"
+                ]
+            }
+        },
+        {
+            "name": "assets",
+            "installMode": "lazy",
+            "updateMode": "prefetch",
+            "resources": {
+                "files": [
+                    "/assets/**",
+                    "/*.(eot|svg|cur|jpg|png|webp|gif|otf|ttf|woff|woff2|ani)"
+                ]
+            }
+        }
+    ],
+    "dataGroups": [
+        {
+            "name": "rates",
+            "urls": [
+                "https://api.exchangerate.host/"
+            ],
+            "cacheConfig": {
+                "maxSize": 10,
+                "maxAge": "12h",
+                "timeout": "20s",
+                "strategy": "freshness"
+            }
+        }
+    ]
+}

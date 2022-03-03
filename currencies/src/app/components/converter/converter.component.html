@@ -1,0 +1,192 @@
+<article class="d-flex align-items-start">
+    <h1 class="page-title title--font-size font--roboto-bold" translate="main.title"></h1>
+</article>
+
+<form
+    class="conversion-area row"
+    [formGroup]="converterForm"
+    (ngSubmit)="exchangeRates()"
+    (keyup.enter)="$event.preventDefault()"
+    novalidate>
+
+    <mat-form-field class="margin-sm-right col-12 col-md-12 col-lg-3 col-xl-3">
+        <input
+            matInput
+            placeholder="{{ 'main.exchange-field.amount' | translate }}"
+            (input)="setFormValidity()"
+            [attr.aria-expanded]="'main.exchange-field.amount' | translate"
+            formControlName="amountControl"
+            type="number">
+    </mat-form-field>
+
+    <mat-form-field class="margin-sm-left-right col-12 col-md-12 col-lg-3 col-xl-3">
+        <input
+            type="text"
+            placeholder="{{ 'main.exchange-field.from' | translate }}"
+            [attr.aria-expanded]="'main.exchange-field.from' | translate"
+            aria-label="From"
+            class="pb-0 from-control"
+            matInput
+            formControlName="fromControl"
+            (input)="selectWrittenCurrency($event, 'fromControl')"
+            (keydown.enter)="selectWrittenCurrency($event, 'fromControl')"
+            [matAutocomplete]="fromAutoComplete">
+
+        <mat-autocomplete #fromAutoComplete="matAutocomplete" (optionSelected)="selectCurrencyByClick($event.option.value, 'fromControl')">
+            <mat-option
+                *ngFor="let fromItem of filteredFromValues | async"
+                [value]="fromItem"
+                class="d-flex justify-content-start"
+                (onSelectionChange)="selectCurrencyByEnter($event, this.fromCurrency)">
+                <span>{{fromItem}}</span>
+
+                <b class="primary--color">{{ getSymbol(fromItem) }} </b>
+            </mat-option>
+        </mat-autocomplete>
+    </mat-form-field>
+
+    <button
+        mat-raised-button
+        type="button"
+        (click)="changeExchangeInputValues()"
+        class="icon-compare-arrows cursor--pointer primary--color margin-sm-left-right opposite-arrows"></button>
+
+    <mat-form-field class="margin-sm-left col-12 col-md-12 col-lg-3 col-xl-3">
+        <input
+            type="text"
+            placeholder="{{ 'main.exchange-field.to' | translate }}"
+            [attr.aria-expanded]="'main.exchange-field.to' | translate"
+            aria-label="To"
+            class="pb-0 to-control"
+            matInput
+            formControlName="toControl"
+            (input)="selectWrittenCurrency($event, 'toControl')"
+            (keydown.enter)="selectWrittenCurrency($event, 'toControl')"
+            [matAutocomplete]="toAutoComplete">
+
+        <mat-autocomplete #toAutoComplete="matAutocomplete" (optionSelected)="selectCurrencyByClick($event.option.value, 'toControl')">
+            <mat-option
+                *ngFor="let toItem of filteredToValues | async"
+                [value]="toItem"
+                (onSelectionChange)="selectCurrencyByEnter($event, this.toCurrency)">
+                <span>{{toItem}}</span>
+
+                <b class="primary--color">{{ getSymbol(toItem) }} </b>
+            </mat-option>
+        </mat-autocomplete>
+    </mat-form-field>
+
+    <button
+        mat-raised-button
+        class="margin-sm-left convert-button"
+        color="primary"
+        type="submit"
+        [attr.aria-expanded]="'main.exchange-field.convert' | translate"
+        [disabled]="!currencyExchangeService.isValid"
+    >{{ 'main.exchange-field.convert' | translate }}
+    </button>
+</form>
+
+<article *ngIf="result">
+    <section class="conversion-result-area justify-content-center mt-4 row">
+        <p class="title--font-size">{{ amount }} {{ fromCurrency }}</p>
+        <p class="title--font-size ml-3 mr-3">=</p>
+        <p class="title--font-size font--roboto-bold accent--color">{{ result | number:'1.5-5' }} {{ toCurrency }}</p>
+    </section>
+
+    <section class="conversion-info-area justify-content-center row">
+        <p class="body-text--font-size no--margin">
+            1 {{ fromCurrency }}
+            =
+            {{ (+toRate / +fromRate) | number:'1.5-5' }} {{ toCurrency }}
+        </p>
+
+        <p class="w-100 no--margin"></p>
+
+        <p class="body-text--font-size no--margin">1 {{ toCurrency }} = {{ (+fromRate / +toRate) | number:'1.5-5' }} {{ fromCurrency }}</p>
+    </section>
+</article>
+
+<article
+    class="row"
+    *ngIf="currencyExchangeService.periodicHistoryExchangeRates.length > 0">
+    <div class="col-12 mt-4 mb-2">
+        <hr>
+    </div>
+
+    <p class="section-title--font-size font--roboto-bold col-12">
+        {{ 'main.tables.exchange-history' | translate }}
+    </p>
+
+    <div class="col-12 mt-4">
+        <mat-form-field>
+            <mat-select
+                [(value)]="selectedDuration"
+                (valueChange)="selectedTimeRange()"
+                placeholder="{{ 'main.tables.duration' | translate }}">
+                <mat-option value="allTime">{{ 'main.tables.all' | translate }}</mat-option>
+                <mat-option value="sevenDays">7 {{ 'main.tables.days' | translate }}</mat-option>
+                <mat-option value="fourteenDays">14 {{ 'main.tables.days' | translate }}</mat-option>
+                <mat-option value="thirtyDaysConversions">30 {{ 'main.tables.days' | translate }}</mat-option>
+            </mat-select>
+        </mat-form-field>
+    </div>
+
+    <section
+        class="history-table col-12 mb-4 pl-3 pr-3"
+        *ngIf="this.dataSource.data.length > 0; else noDataTimeline">
+        <div class="row flex-xl-row flex-lg-row flex-md-row flex-sm-column no--padding m-0 mb-4">
+            <div class="col-12 col-md-6 col-lg-6 col-xl-6 p-0 pr-lg-2 pr-md-2 pr-xl-2 mt-xl-0 mt-lg-0 mt-md-0 mt-4 order-1 order-md-0">
+                <table
+                    mat-table
+                    [dataSource]="dataSource"
+                    class="w-100">
+                    <!-- Date Column -->
+                    <ng-container matColumnDef="date">
+                        <th mat-header-cell *matHeaderCellDef> {{ 'main.tables.date' | translate }}</th>
+                        <td mat-cell *matCellDef="let element"> {{element.date}}</td>
+                    </ng-container>
+
+                    <!-- Exchange Rate Column -->
+                    <ng-container matColumnDef="exchangeRate">
+                        <th mat-header-cell *matHeaderCellDef> {{ 'main.tables.exchange-rate' | translate }}</th>
+                        <td mat-cell *matCellDef="let element"> {{element.exchangeRate}}</td>
+                    </ng-container>
+
+                    <tr mat-header-row *matHeaderRowDef="displayedHistoricalColumns"></tr>
+                    <tr mat-row *matRowDef="let row; columns: displayedHistoricalColumns;"></tr>
+                </table>
+            </div>
+
+            <div class="col-12 col-md-6 col-lg-6 col-xl-6 p-0 pl-lg-2 pl-md-2 pl-xl-2 order-0 order-md-1">
+                <table
+                    mat-table
+                    [dataSource]="statisticalDataSource"
+                    class="w-100">
+                    <!-- Name Column -->
+                    <ng-container matColumnDef="name">
+                        <th mat-header-cell *matHeaderCellDef> {{ 'main.tables.statistics' | translate }}</th>
+                        <td mat-cell *matCellDef="let element"> {{element.name}}</td>
+                    </ng-container>
+
+                    <!-- Summary Column -->
+                    <ng-container matColumnDef="summary">
+                        <th mat-header-cell *matHeaderCellDef></th>
+                        <td mat-cell *matCellDef="let element"> {{element.summary | number:'1.5-5'}}</td>
+                    </ng-container>
+
+                    <tr mat-header-row *matHeaderRowDef="displayedStatisticalColumns"></tr>
+                    <tr mat-row *matRowDef="let row; columns: displayedStatisticalColumns;"></tr>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <ng-template #noDataTimeline>
+        <div class="col-12">
+            <p class="color--matte-red">
+                {{ 'main.error.no-data' | translate }}
+            </p>
+        </div>
+    </ng-template>
+</article>

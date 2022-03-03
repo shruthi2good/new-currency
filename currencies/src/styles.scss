@@ -1,0 +1,116 @@
+body {
+	height: 100vh;
+}
+
+.no--padding {
+	padding: 0 !important;
+}
+
+.no--margin {
+	margin: 0 !important;
+}
+
+.cursor--pointer {
+	cursor: pointer;
+}
+
+.font--roboto {
+	font-family: 'Roboto', Helvetica, Arial, serif;
+}
+
+.font--roboto-bold {
+	font-family: 'Roboto - Bold', Helvetica, Arial, serif;
+}
+
+.primary--color {
+	color: #009688;
+}
+
+.primary--background-color {
+	background-color: #009688;
+}
+
+.accent--color {
+	color: #94c720;
+}
+
+.accent--background-color {
+	background-color: #94c720;
+}
+
+.warn--color {
+	color: #c70d38;
+}
+
+.warn--background-color {
+	background-color: #c70d38;
+}
+
+.default--text-color {
+	color: #404040;
+}
+
+.table-header--text-color {
+	color: #8d8d8d;
+}
+
+.title--font-size {
+	font-size: 48px;
+}
+
+.section-title--font-size {
+	font-size: 24px;
+}
+
+.symbol--font-size {
+	font-size: 20px;
+}
+
+.body-text--font-size {
+	font-size: 16px;
+}
+
+.margin-sm-left-right {
+	margin: 0 10px !important;
+}
+
+.margin-sm-left {
+	margin-left: 10px !important;
+}
+
+.margin-sm-right {
+	margin-right: 10px !important;
+}
+
+.color--matte-red {
+	color: #8b4242;
+}
+
+.mh-100px {
+	min-height: 100px;
+}
+
+button:focus {
+	outline: none;
+	box-shadow: 0 0 1px 1px #333 !important;
+}
+
+app-converter,
+app-history {
+	margin-bottom: auto;
+}
+
+app-language-buttons {
+	margin-top: auto;
+}
+
+.mat-mini-fab {
+	line-height: 1 !important;
+	width: 30px !important;
+	height: 30px !important;
+
+	.mat-button-wrapper {
+		line-height: 1 !important;
+		font-size: 12px !important;
+	}
+}

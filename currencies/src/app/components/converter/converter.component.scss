@@ -1,0 +1,29 @@
+.page-title {
+	margin-bottom: 45px;
+}
+
+.mat-option-text {
+	display: flex !important;
+	justify-content: space-between;
+}
+
+.conversion-area {
+	.opposite-arrows {
+		font-size: 24px;
+		padding: 0;
+		min-width: 45px;
+		max-height: 45px;
+	}
+
+	.convert-button {
+		font-size: 12px;
+		min-width: 45px;
+		max-height: 45px;
+	}
+
+	.from-control,
+	.to-control {
+		text-transform: uppercase;
+	}
+}
+

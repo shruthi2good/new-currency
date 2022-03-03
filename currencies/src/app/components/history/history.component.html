@@ -1,0 +1,57 @@
+<article class="d-flex align-items-start">
+    <h1 class="page-title title--font-size font--roboto-bold">
+        {{ 'main.tables.exchange-history' | translate }}
+    </h1>
+</article>
+<canvas id="myChart" width="400" height="400"></canvas>
+
+<article class="d-flex flex-fill">
+    <section class="history-area-table w-100 mb-4">
+        <table
+            mat-table
+            [dataSource]="periodicHistoryDataSource"
+            class="w-100"
+            *ngIf="periodicHistoryData.length > 0; else noHistoricalData">
+            <!-- Date Column -->
+            <ng-container matColumnDef="date">
+                <th mat-header-cell *matHeaderCellDef> {{ 'main.tables.date' | translate }}</th>
+                <td mat-cell *matCellDef="let element"> {{element.date}}</td>
+            </ng-container>
+
+            <!-- Event Rate Column -->
+            <ng-container matColumnDef="event">
+                <th mat-header-cell *matHeaderCellDef> {{ 'main.tables.event' | translate }}</th>
+                <td mat-cell *matCellDef="let element"> {{element.event}}</td>
+            </ng-container>
+
+            <!-- Actions Column -->
+            <ng-container matColumnDef="actions">
+                <th mat-header-cell *matHeaderCellDef> {{ 'main.tables.actions' | translate }}</th>
+                <td mat-cell *matCellDef="let element">
+                    <button
+                        mat-button
+                        (click)="setCurrencyJob(element.amount, element.fromCurrency, element.toCurrency)"
+                        class="icon-red-eye primary--color">
+                        {{ 'main.tables.view' | translate }}
+                    </button>
+
+                    <button
+                        mat-button
+                        (click)="removeCurrencyItem(element)"
+                        class="icon-delete-forever warn--color ml-2">
+                        {{ 'main.tables.delete' | translate }}
+                    </button>
+                </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedHistoricalColumns; sticky: true"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedHistoricalColumns;"></tr>
+        </table>
+
+        <ng-template #noHistoricalData>
+            <p class="no--margin color--matte-red">
+                {{ 'main.error.no-history' | translate }}
+            </p>
+        </ng-template>
+    </section>
+</article>
